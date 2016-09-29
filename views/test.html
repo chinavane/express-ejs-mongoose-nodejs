@@ -1,0 +1,173 @@
+<% include header.html %>
+
+<div class="bs-docs-header" id="content" tabindex="-1">
+  <div class="container">
+    <h2>信息展示</h2>
+  </div>
+</div>
+<!-- 执行查询 -->
+<script type="text/javascript">
+	// 查询展示公共函数
+	function querydata(data){
+		$('#info').empty();
+		var innerhtml = "";
+		for(var i = 0 ; i < data.length ; i ++){
+			// var param = {};
+			// param.id = data[i]._id;
+			// param.name = data[i].name;
+			// param.age = data[i].age;
+			// param.gender = data[i].gender;
+			//var param={id:data[i]._id,name:data[i].name,age:data[i].age,gender:data[i].gender};
+			//var param = [data[i]._id,data[i].name,data[i].age,data[i].gender];
+			//console.log(param);
+			innerhtml += "<tr><td id='"+data[i]._id+"_name'>"+data[i].name+
+			"</td><td id='"+data[i]._id+"_age'>"+data[i].age+
+			"</td><td id='"+data[i]._id+"_gender'>"+data[i].gender+
+			"</td><td id='"+data[i]._id+"'><button type='button' class='btn btn-success' onclick=editrec('"+data[i]._id+"')>修改</button>"+
+			"<button type='button' class='btn btn-danger' onclick=delrec('"+data[i]._id+"')>删除</button></td></tr>";
+			// console.log(data[i]._id);
+		}
+		$('#info').html(innerhtml);
+	};
+
+	// 编辑操作
+	function editrec(_id){
+		$("#"+_id).html("<button type='button' class='btn btn-default' onclick=relEditrec('"+_id+"')>保存</button>"+
+			"<button type='button' class='btn btn-primary' onclick=cancelrec('"+_id+"')>取消</button>");
+		$("#"+_id+"_name").attr("contenteditable","true");
+		$("#"+_id+"_age").attr("contenteditable","true");
+		$("#"+_id+"_gender").attr("contenteditable","true");
+		
+	};
+
+	// 编辑保存操作
+	function relEditrec(_id){
+		var param = {};
+		param._id = _id;
+		param.name = $("#"+_id+"_name").html();
+		param.age = $("#"+_id+"_age").html();
+		param.gender = $("#"+_id+"_gender").html();
+		console.log(param);
+		$.post('/testd/update',param,function(data){
+			if(data.errors){
+				alert(data.errors);
+				return;
+			}
+			querydata(data);
+		});
+	};
+
+	// 删除操作
+	function delrec(_id){
+		console.log(_id);
+		$("#"+_id).empty();
+		$("#"+_id).html("<button type='button' class='btn btn-danger' onclick=reldelrec('"+_id+"')>删除？</button>"+
+			"<button type='button' class='btn btn-primary' onclick=cancelrec('"+_id+"')>取消</button>");
+	};
+
+	// 确认删除
+	function reldelrec(_id){
+		$.post('/testd/del',{_id:_id},function(data){
+			if(data.errors){
+				alert(data.errors);
+				return;
+			}
+			querydata(data);
+		});
+	};
+	// 还原操作
+	function cancelrec(_id){
+		console.log(_id);
+		$("#"+_id).empty();
+		$("#"+_id).html("<button type='button' class='btn btn-success' onclick=editrec('"+_id+"')>修改</button>"+
+				"<button type='button' class='btn btn-danger' onclick=delrec('"+_id+"')>删除</button>");
+		$("#"+_id+"_name").attr("contenteditable","false");
+		$("#"+_id+"_age").attr("contenteditable","false");
+		$("#"+_id+"_gender").attr("contenteditable","false");
+	};
+
+	$(document).ready(function(){
+		// 页面初始化查询
+		$.getJSON("/testd/init",{},function(data){
+			querydata(data);
+		});
+		// 保存及保存后展示
+		$("#saveRec").click({msg:'click add'},function(event){
+			var name = $("#name").val();
+			var age = $("#age").val();
+			var gender = $("#gender").val();
+			var param = {name:name,age:age,gender:gender};
+			console.log(param);
+			$.post('/testd/new',param,function(data){
+				if(data.errors){
+					alert(data.errors);
+					return;
+				}
+				querydata(data);
+			}).error(function(err){
+				alert(err);
+			});
+		});
+
+	});
+
+
+</script>
+
+<div class="container">
+	<form id="_form">
+	<button type="button" class="btn btn-primary" data-toggle="collapse" 
+			data-target="#addcontent" id="_add">
+		增加
+	</button>
+	<p>
+		<div id="addcontent" class="collapse">
+			<input type="text" class="form-horizontal" id="name" placeholder="请输入名称">
+			<input type="text" class="form-horizontal" id="age" placeholder="请输入年龄">
+			<input type="text" class="form-horizontal" id="gender" placeholder="请输入性别">
+			<button type="button" class="btn btn-warning" id="saveRec">保存</button>
+		</div>
+	</p>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>姓名</th>
+				<th>年龄</th>
+				<th>性别</th>
+				<th  style="width:150px">操作</th>
+			</tr>
+		</thead>
+		<tbody id = "info">
+			<tr>
+				<td>Anna</td>
+				<td>1</td>
+				<td>male</td>
+				<td>
+					<button type="button" class="btn btn-success">修改</button>
+					<button type="button" class="btn btn-danger">删除</button>
+				</td>
+			</tr>
+			<tr>
+				<td>Debbie</td>
+				<td>2</td>
+				<td>female</td>
+				<td>
+					<button type="button" class="btn btn-success">修改</button>
+					<button type="button" class="btn btn-danger">删除</button>
+				</td>
+			</tr>
+			<tr>
+				<td>John</td>
+				<td>3</td>
+				<td>male</td>
+				<td>
+					<button type="button" class="btn btn-success">修改</button>
+					<button type="button" class="btn btn-danger">删除</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	</form>
+</div>
+
+<% include footer.html %>
