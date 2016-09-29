@@ -1,11 +1,13 @@
 var express = require('express');
 var router = express.Router();
+var crypto = require('crypto');// 加密模块
 
 var userinfoModel = require('../db/models/UserinfoModel');
 var db = require('../db/db');
 
 router.get('/', function(req, res, next) {
 	var username = req.session.user?req.session.user.username:'';
+	console.log(username);
 	res.render('login',{title:'上帝入口',user:username});
 });
 
@@ -17,6 +19,13 @@ router.post('/', function(req, res, next) {
 	var password = req.body.password;
 	console.log(usercode);
 	console.log(password);
+
+	// 加密
+	var sha1 = crypto.createHash('sha1');
+	sha1.update(password);
+	password = sha1.digest('hex');
+	
+
 	userInfoModel.find({usercode:usercode,password:password}).exec(function(err,doc){
 		if(err){
 			// 如果出错，返回错误信息
@@ -32,34 +41,21 @@ router.post('/', function(req, res, next) {
 			console.log(err.stack());
 		}
 		else{
-			console.log(doc);
-			console.log('userinfo is :'+ doc[0]);
-			
-			// res.redirect('http://www.baidu.com');
-			
-			// res.writeHead(301, {'location': 'http://www.baidu.com'});
-			// res.redirect('/');
-			// console.log('/');
-			// res.end();
-			
-			// res.render('index',{title:'首页'});
 			if(doc.length != 0){
 				console.log('there is a user.');
 				req.session.user=doc[0];
-				// res.writeHead(301, {'location': '/'});
-				// res.end();
 				res.send({'redirect':'/'});
-				// res.render('index',{title:'首页'});
 			}
 			else{
 				console.log('there is no such user.');
 				res.json({errors:'无此用户'});
 			}
-			
 		}
 	});
-	
-
 });
-
+// 登出
+router.all('/logout', function(req, res, next) {
+	req.session.user = null;
+	res.redirect('/login');
+});
 module.exports = router;

@@ -13,6 +13,10 @@ var userInfoSchema = new Schema({
 	password : {
 		type : String,
 		required : [true,'why no password?'],
+	},
+	email : {
+		type : String,
+		required : [true,'why no email?'],
 	}
 },{collection:'userinfo'});
 

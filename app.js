@@ -12,6 +12,7 @@ var indexs = require('./routes/index');
 var tests = require('./routes/test');
 var testd = require('./routes/testdata');
 var login = require('./routes/login');
+var register = require('./routes/register');
 
 var app = express();
 
@@ -44,7 +45,10 @@ app.use(session({
 app.use(function(req,res,next){
     console.log("地址是："+req.url);
     if (!req.session || !req.session.user) {
-      if(req.url != '/login'){
+      if(req.url == '/register'){
+        next();
+      }
+      else if(req.url != '/login'){
         console.log('redirect to login page');
         return res.redirect('/login');
       }
@@ -65,9 +69,11 @@ app.use('/testd/new', testd);
 app.use('/testd/del', testd);
 app.use('/testd/update', testd);
 //app.use('/users', users);
-
+// 登陆
 app.use('/login',login);
-app.use('/login/check',login);
+app.use('/login/logout',login);
+// 注册
+app.use('/register',register);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

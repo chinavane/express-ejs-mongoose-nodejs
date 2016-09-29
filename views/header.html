@@ -56,8 +56,12 @@
 
           <ul class="nav navbar-nav navbar-right">
             <li><p class="navbar-text">欢迎！<%=user%></p></li>
-            <li class="disabled"><a href="#"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
-            <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+            <li><a href="/register"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+            <% if (user != '') {%>
+              <li><a href="/login/logout"><span class="glyphicon glyphicon-log-out"></span> 退出</a></li>
+            <% } else { %>
+              <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+            <% } %>
           </ul>
         </div><!--/.navbar-collapse -->
       </div>
