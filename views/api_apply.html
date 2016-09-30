@@ -1,0 +1,51 @@
+<% include header.html %>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("#_apply").click(function(){
+		$.post('/api_apply',{},function(data){
+			console.log(data);
+	        if(data.errors){
+	          $('#_apply').after('<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert"> &times;  </a> <strong>警告！</strong>'+data.errors+' </div>');
+	          return;
+	        }
+	        else{
+	          // 设置数据
+
+	          $("#pubkey").val(data.pubkey);
+	          $("#privkey").val(data.privkey);
+
+	        }
+		});
+	});
+});
+
+</script>
+
+
+<div class="bs-docs-header" id="content" tabindex="-1">
+  <div class="container">
+    <h2>API申请</h2>
+  </div>
+</div>
+
+
+
+<div class="container">
+	<button type="button" class="btn btn-primary" data-toggle="collapse" 
+			data-target="#addcontent" id="_apply">
+		申请
+	</button>
+	<p></p>
+	<fieldset disabled>
+	<div class="form-group">
+	    <label for="name">私钥</label>
+	    <textarea class="form-control" rows="6" id="pubkey"></textarea>
+	    <label for="name">公钥</label>
+	    <textarea class="form-control" rows="10" id="privkey"></textarea>
+	</div>
+	</fieldset>
+</div>
+
+<% include footer.html %>
