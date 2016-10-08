@@ -17,6 +17,7 @@ var login = require('./routes/login');
 var register = require('./routes/register');
 var api_desc = require('./routes/api_desc');
 var api_apply = require('./routes/api_apply');
+var api_server = require('./routes/api_server');
 
 var app = express();
 
@@ -49,7 +50,7 @@ app.use(session({
 app.use(function(req,res,next){
     console.log("地址是："+req.url);
     if (!req.session || !req.session.user) {
-      if(req.url == '/register'){
+      if(req.url == '/register' || req.url == '/api' || req.url == '/favicon.ico'){
         next();
       }
       else if(req.url != '/login'){
@@ -82,6 +83,8 @@ app.use('/register',register);
 // api申请
 app.use('/api_desc',api_desc);
 app.use('/api_apply',api_apply);
+// api服务端
+app.use('/api',api_server);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

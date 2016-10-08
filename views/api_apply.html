@@ -15,8 +15,15 @@ $(document).ready(function(){
 
 	          $("#pubkey").val(data.pubkey);
 	          $("#privkey").val(data.privkey);
-
 	        }
+		});
+	});
+
+	// 测试
+	$("#_test").click(function(){
+
+		$.post('/api',real_post_data,function(data){
+
 		});
 	});
 });
@@ -40,12 +47,52 @@ $(document).ready(function(){
 	<p></p>
 	<fieldset disabled>
 	<div class="form-group">
-	    <label for="name">私钥</label>
-	    <textarea class="form-control" rows="6" id="pubkey"></textarea>
 	    <label for="name">公钥</label>
-	    <textarea class="form-control" rows="10" id="privkey"></textarea>
+	    <textarea class="form-control" rows="6" id="pubkey" ><%=pubkey%></textarea>
+	    <label for="name">私钥</label>
+	    <textarea class="form-control" rows="10" id="privkey"><%=privkey%></textarea>
 	</div>
 	</fieldset>
+	<p></p>
+
+	<p></p>
+	<div class="page-header">
+	    <h1>测试API权限认证
+	        <small>测试</small>
+	    </h1>
+	</div>
+	<p>传递的参数：<br/>
+		will_post_data={
+			api_name:'apply',
+			api_code=:'001'
+		}<br/>
+		<p>加密方式：</p>
+		const crypto = require('crypto');<br/>
+		const sign = crypto.createSign('RSA-SHA1');<br/>
+		sign_str = api_name=apply&api_code=001;<br/>
+		sign.update(sign_str);<br/>
+		var signature = sign.sign(priv_key,'hex');<br/>
+
+		<p>请求方式：</p>
+
+		real_post_data={
+			api_name:'apply',
+			api_code:'001',
+			signature:signature
+		}<br/>
+		
+		$.post('/api',real_post_data,function(data){<br/>
+		<br/>
+		});<br/>
+	</p>
+	<p>测试方法参考api_client.js</p>
+	<p>
+		<button type="button" class="btn btn-primary" data-toggle="collapse" 
+			data-target="#addcontent" id="_test">
+		测试
+	</button>
+	
+	</p>
 </div>
 
 <% include footer.html %>
