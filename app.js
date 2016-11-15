@@ -18,6 +18,13 @@ var register = require('./routes/register');
 var api_desc = require('./routes/api_desc');
 var api_apply = require('./routes/api_apply');
 var api_server = require('./routes/api_server');
+// 权限管理
+var mngmenu = require('./routes/authority/mngmenu');
+var mngrole = require('./routes/authority/mngrole');
+var mnguser = require('./routes/authority/mnguser');
+
+// 自定义中间件，url路径权限管理
+var urlAuthor = require('./middleware/urlAuthor');
 
 var app = express();
 
@@ -48,7 +55,7 @@ app.use(session({
 
 // 设置登陆控制，session保存用户信息
 app.use(function(req,res,next){
-    console.log("地址是："+req.url);
+    // console.log("地址是："+req.url);
     if (!req.session || !req.session.user) {
       if(req.url == '/register' || req.url == '/api' || req.url == '/favicon.ico'){
         next();
@@ -61,11 +68,14 @@ app.use(function(req,res,next){
         next();
       }
       else if (req.session.user) {
-        console.log('already login');
-        console.log(req.session.user);
+        // console.log('already login');
+        // console.log(req.session.user);
         next();
       }
 });
+
+// app.configure(function(){app.use(urlAuthor);});
+app.use(urlAuthor());
 
 app.use('/', indexs);
 app.use('/testd', testd);
@@ -85,6 +95,10 @@ app.use('/api_desc',api_desc);
 app.use('/api_apply',api_apply);
 // api服务端
 app.use('/api',api_server);
+// 权限管理
+app.use('/mngmenu',mngmenu);
+app.use('/mngrole',mngrole);
+app.use('/mnguser',mnguser);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

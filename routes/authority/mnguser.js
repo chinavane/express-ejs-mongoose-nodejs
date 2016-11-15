@@ -1,22 +1,24 @@
 var express = require('express');
 var router = express.Router();
 var crypto = require('crypto');// 加密模块
-var userinfoModel = require('../db/models/UserModel');
-var UserRoleModel = require('../db/models/UserRoleModel');
-var RoleModel = require('../db/models/RoleModel');
-var db = require('../db/db');
+var userinfoModel = require('../../db/models/UserModel');
+var UserRoleModel = require('../../db/models/UserRoleModel');
+var RoleModel = require('../../db/models/RoleModel');
+var db = require('../../db/db');
+
 
 router.get('/', function(req, res, next) {
 
 	var username = req.session.user?req.session.user.username:'';
-	res.render('register',{title:'上帝注册',user:username});
-
+	res.render('authority/mnguser',{title:'管理用户',user:username});
 });
 
 router.post('/',function(req,res,next){
 	var usercode = req.body.usercode;
 	var username = req.body.username;
 	var email = req.body.email;
+	var birthday = req.body.birthday;
+	var gender = req.body.gender;
 	var password = req.body.password;
 	var userInfoModel = userinfoModel.UserModel;
 	// 加密
@@ -27,7 +29,10 @@ router.post('/',function(req,res,next){
 	userinfo.username = username;
 	userinfo.email = email;
 	userinfo.usercode = usercode;
+	userinfo.gender = gender;
+	userinfo.birthday = birthday;
 	userinfo.password = sha1.digest('hex');
+	userinfo.createdby = req.session.user.usercode;
 
 	userInfoModel.create(userinfo,function(err,doc){
 		if(err){
@@ -44,7 +49,6 @@ router.post('/',function(req,res,next){
 		else{
 
 			console.log(doc);
-			req.session.user = doc;
 
 			// 默认分配超级用户权限
 			RoleModel.RoleModel.findOne({rid:2},function(err,role){
@@ -63,10 +67,11 @@ router.post('/',function(req,res,next){
 						}
 					});
 				}
+				
+				
 			});
-
-			
 		}
 	});
 });
+
 module.exports = router;

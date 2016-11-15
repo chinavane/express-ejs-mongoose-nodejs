@@ -15,7 +15,7 @@ router.post('/', function(req, res, next) {
 
 	// 查询公钥
 	rsaKeysModel.rsaKeysModel.find().populate({
-		path:'userinfo',
+		path:'user',
 		match:{name:'james'}
 	}).exec(function(err,doc){
 		// console.log(doc);

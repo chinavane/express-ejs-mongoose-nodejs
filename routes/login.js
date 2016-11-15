@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var crypto = require('crypto');// 加密模块
 
-var userinfoModel = require('../db/models/UserinfoModel');
+var userinfoModel = require('../db/models/UserModel');
 var db = require('../db/db');
 
 router.get('/', function(req, res, next) {
@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
 	console.log('-------------');
-	var userInfoModel = userinfoModel.userInfoModel;
+	var userInfoModel = userinfoModel.UserModel;
 	// req.session.user={name:'jack'};
 	var usercode = req.body.usercode;
 	var password = req.body.password;

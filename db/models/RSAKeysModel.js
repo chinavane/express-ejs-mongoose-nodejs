@@ -12,7 +12,7 @@ var rsaKeysSchema = new Schema({
 	},
 	applyer : {
 		type : Schema.Types.ObjectId,
-		ref: 'userinfo'
+		ref: 'user'
 	}
 },{collection:'rsakeys'});
 

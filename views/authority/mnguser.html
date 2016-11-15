@@ -1,0 +1,153 @@
+<% include ../header.html %>
+<link href="/stylesheets/mnguser.css" rel="stylesheet">
+<script src="/javascripts/bootstrap/datetimepicker/bootstrap-datetimepicker.js"></script>
+<link href="/javascripts/bootstrap/datetimepicker/bootstrap-datetimepicker.css" rel="stylesheet">
+<!--div class="bs-docs-header" id="content" tabindex="-1">
+  <div class="container">
+    <h2>管理用户</h2>
+  </div>
+</div-->
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+		$("#registerbtn").click(function(){
+			var username = $("#name").val();
+			var email = $("#email").val();
+			var usercode = $("#usercode").val();
+			var birthday = $("#birthday").val();
+			var gender = $("#gender").val();
+			var passwd = $("#password").val();
+			var confirm = $("#confirm").val();
+
+			if(passwd != confirm){
+				$('#confirmform').after('<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert"> &times;  </a> <strong>警告！</strong>'+data.errors+' </div>');
+				return;
+			}
+
+			var param = {};
+			param.username = username;
+			param.email = email;
+			param.gender = gender;
+			param.birthday = birthday;
+			param.usercode = usercode;
+			param.password = passwd;
+
+			
+			$.post('/mnguser',param,function(data){
+				console.log(data);
+		        if(data.errors){
+
+		          $('#confirmform').after('<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert"> &times;  </a> <strong>警告！</strong>'+data.errors+' </div>');
+		          return;
+		        }
+		        else{
+		          window.location=data.redirect;
+		        }
+			});
+		});
+	});
+
+
+</script>
+<div class="container">
+			<div class="row main">
+				<div class="panel-heading">
+	               <div class="panel-title text-center">
+	               		<h1 class="title">管理用户</h1>
+	               		<hr />
+	               	</div>
+	            </div> 
+				<div class="main-login main-center">
+					<form class="form-horizontal" method="post" action="#">
+						
+						<div class="form-group">
+							<label for="name" class="cols-sm-2 control-label">姓名</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="name" id="name"  placeholder="请输入姓名"/>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="usercode" class="cols-sm-2 control-label">登陆用户名</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="usercode" id="usercode"  placeholder="请输入登陆用户名"/>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="form-group">
+							<label for="birthday" class="cols-sm-2 control-label">出生日期</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
+									
+									<input size="16" type="text" class="form-control form_datetime input-append date" placeholder="请输入出生日期" name="birthday" id="birthday" value="1988-09-18">
+								</div>
+							</div>
+						</div>
+
+						
+						<div class="form-group">
+							<label for="gender" class="cols-sm-2 control-label">性别</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
+
+									<select class="form-control" name="gender" id="gender">
+								      <option>male</option>
+								      <option>female</option>
+								    </select>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="form-group">
+							<label for="email" class="cols-sm-2 control-label">邮箱</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="email" id="email"  placeholder="请输入邮箱"/>
+								</div>
+							</div>
+						</div>
+
+						
+
+						<div class="form-group">
+							<label for="password" class="cols-sm-2 control-label">密码</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+									<input type="password" class="form-control" name="password" id="password"  placeholder="请输入密码"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group" id="confirmform">
+							<label for="confirm" class="cols-sm-2 control-label">再次确认密码</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+									<input type="password" class="form-control" name="confirm" id="confirm"  placeholder="请确认密码"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group ">
+							<button type="button" class="btn btn-primary btn-lg btn-block login-button" id="registerbtn">注册</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+
+<% include ../footer.html %>

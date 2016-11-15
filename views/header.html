@@ -59,14 +59,23 @@
                 <li><a href="/api_apply">API权限申请</a></li>
               </ul>
             </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">权限管理 <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="/mnguser">管理用户</a></li>
+                <li><a href="/mngrole">管理角色</a></li>
+                <li><a href="/mngmenu">管理菜单</a></li>
+              </ul>
+            </li>
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
             <li><p class="navbar-text">欢迎！<%=user%></p></li>
-            <li><a href="/register"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+            
             <% if (user != '') {%>
               <li><a href="/login/logout"><span class="glyphicon glyphicon-log-out"></span> 退出</a></li>
             <% } else { %>
+              <li><a href="/register"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
               <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
             <% } %>
           </ul>
