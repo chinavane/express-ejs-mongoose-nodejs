@@ -1,0 +1,41 @@
+<% include ./header.html %>
+<div class="bs-docs-header" id="content" tabindex="-1">
+  <div class="container">
+    <h2>请求转发</h2>
+  </div>
+</div>
+
+<div class="container">
+	<div class="page-header">
+    <h1>请求转发案例
+        <!--small></small-->
+    </h1>
+    <p>Nodejs接受请求以后可以转发给另外的服务器处理，然后把处理结果再返回前端。</p>
+    <p>
+    	<pre>
+    	router.get('/', function(req, res, next) {
+
+			var username = req.session.user?req.session.user.username:'';
+			
+			var content = '';
+			var url = "http://localhost:8082/dev/student/all";
+			http.get(url, function(resp) {
+		        resp.on('data', function(data) {
+		            content += data;
+		        }).on('end', function() {
+		            res.render('reqforword',{title:'请求转发',user:username,news:content});
+		        });
+		    })
+
+		});
+		
+		</pre>
+    </p>
+    <pre>结果如下：↓</pre>
+</div>
+
+	<pre>
+		<div id="info"><%=news%></div>
+	</pre>
+</div>
+<% include ./footer.html %>

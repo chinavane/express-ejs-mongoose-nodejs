@@ -23,6 +23,8 @@ var mngmenu = require('./routes/authority/mngmenu');
 var mngrole = require('./routes/authority/mngrole');
 var mnguser = require('./routes/authority/mnguser');
 
+// 请求转发
+var reqforword = require('./routes/reqforword');
 // 自定义中间件，url路径权限管理
 var urlAuthor = require('./middleware/urlAuthor');
 
@@ -100,6 +102,8 @@ app.use('/mngmenu',mngmenu);
 app.use('/mngrole',mngrole);
 app.use('/mnguser',mnguser);
 
+// 请求转发
+app.use('/reqforword',reqforword);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
