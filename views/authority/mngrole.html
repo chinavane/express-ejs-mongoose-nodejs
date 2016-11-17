@@ -1,7 +1,202 @@
 <% include ../header.html %>
+<style type="text/css">
+	.roleselect{
+		background-color: #6CB33E;
+	}
+</style>
+<script type="text/javascript">
+	// 处理role查询结果
+	function queryRole(data){
+		$('#list_roles').empty();
+		var innerhtml = "";
+		for(var i = 0 ; i < data.length ; i ++){
+
+			innerhtml += "<a href=\"#\" class=\"list-group-item\" id='"+data[i]._id+"' onclick=clickViewRole('"+data[i]._id+"')>"+data[i].rname+"</a>";
+		}
+		$('#list_roles').html(innerhtml);
+	};
+	// 处理rolemenu查询结果
+	function queryRolemenu(data){
+		$('#list_auth').empty();
+		var innerhtml = "";
+		for(var i = 0 ; i < data.length ; i ++){
+
+			innerhtml += "<a href=\"#\" class=\"list-group-item\" id='"+data[i]._id+"' ondblclick=clickViewRolemenu('"+data[i]._id+"')>"+data[i].mname+"</a>";
+		}
+		$('#list_auth').html(innerhtml);
+	};
+
+	// 处理qrolemenuUnanth查询结果
+	function qrolemenuUnanth(data){
+		$('#list_unauth').empty();
+		var innerhtml = "";
+		for(var i = 0 ; i < data.length ; i ++){
+
+			innerhtml += "<a href=\"#\" class=\"list-group-item\" id='"+data[i]._id+"' ondblclick=clickViewRolemenuUnauth('"+data[i]._id+"')>"+data[i].mname+"</a>";
+		}
+
+		// if(innerhtml == "")
+		// 	innerhtml="<a href=\"#\" class=\"list-group-item\">无未授权项目</a>";
+		$('#list_unauth').html(innerhtml);
+	};
+
+	// 点击role
+	function clickViewRole(id){
+		$("#hiddenrole").val(id);
+		// alert('click me');
+		$("#list_roles").children().css("background-color","");//.removeClass("roleselect");
+		$("#"+id).css("background-color","#6CB33E");//addClass("roleselect");
+		// 查询已授权权限
+		$.post("/mngrole/qrolemenu",{rid:id},function(data){
+			queryRolemenu(data);
+		});
+		// 查询未授权权限
+		$.post("/mngrole/qrolemenuUnanth",{rid:id},function(data){
+			qrolemenuUnanth(data);
+		});
+	};
+
+
+	// 取消授权
+	function clickViewRolemenu(id){
+		// alert(id);
+		$.post("/mngrole/unauthmenu",{mid:id,rid:$("#hiddenrole").val()},function(data){
+			if(data.errors==""){
+				$.post("/mngrole/qrolemenu",{rid:$("#hiddenrole").val()},function(data){
+					queryRolemenu(data);
+				});
+
+				$.post("/mngrole/qrolemenuUnanth",{rid:$("#hiddenrole").val()},function(data){
+					qrolemenuUnanth(data);
+				});
+			}
+		});
+	};
+
+	// 增加授权
+	function clickViewRolemenuUnauth(id){
+		// alert(id);
+		$.post("/mngrole/authmenu",{mid:id,rid:$("#hiddenrole").val()},function(data){
+			if(data.errors==""){
+				$.post("/mngrole/qrolemenu",{rid:$("#hiddenrole").val()},function(data){
+					queryRolemenu(data);
+				});
+
+				$.post("/mngrole/qrolemenuUnanth",{rid:$("#hiddenrole").val()},function(data){
+					qrolemenuUnanth(data);
+				});
+			}
+		});
+	};
+
+	$(document).ready(function(){
+		// 提示信息
+		$('.tooltip-toggle').tooltip('toggle');
+		$(".tooltip-options a").tooltip({html : true });
+
+		// 查询角色
+		$.post("/mngrole/qrole",{},function(data){
+			queryRole(data);
+			$('#list_unauth').empty();
+			$('#list_auth').empty();
+		});
+
+		// 增加角色
+		$("#addRolebtn").click(function(){
+			var rolename = $("#rname").val();
+			var roledesc = $("#rdesc").val();
+			$.post("/mngrole/addrole",{rname:rolename,rdesc:roledesc},function(data){
+				if(data.errors==""){
+					$.post("/mngrole/qrole",{},function(data){
+						queryRole(data);
+						$('#list_unauth').empty();
+						$('#list_auth').empty();
+					});
+				}
+				
+			});
+		});
+	});
+
+</script>
+
 <div class="bs-docs-header" id="content" tabindex="-1">
   <div class="container">
     <h2>管理角色</h2>
   </div>
 </div>
+<input type="hidden" id="hiddenrole"/>
+<div class="container">
+    <div class="row" >
+    	<div class="col-xs-3 col-sm-10">
+			<div id="addcontent" class="input-group">
+				<div class="form-group">
+					<label class="control-label  form-horizontal">增加角色</label>
+
+					<input type="text"  class="form-horizontal" id="rname" placeholder="角色名称">
+
+					<input type="text" class="form-horizontal"  id="rdesc" placeholder="角色描述">
+
+					<button type="button" class=" form-horizontal btn btn-warning" id="addRolebtn">保存</button>
+				</div>
+			</div>
+		</div>
+    </div>
+    <br/>
+    <div class="row" >
+   		<!--角色列表-->
+		<div class="col-xs-6 col-sm-3">
+			<div class="list-group">
+				<div class="tooltip-options">
+					<a class="list-group-item active" data-toggle="tooltip" title="单击查看">系统角色</a>
+				</div>
+				<div id="list_roles">
+					<a href="#" class="list-group-item">管理员</a>
+					<a href="#" class="list-group-item">超级用户</a>
+				</div>
+			</div>
+		</div>
+		<!--角色权限-->
+		<div class="col-xs-6 col-sm-3" >
+			<div class="list-group">
+				<div class="tooltip-options">
+					<a class="list-group-item active" data-toggle="tooltip" title="双击取消权限">已分配权限</a>
+				</div>
+				<div id="list_auth">
+					<a href="#" class="list-group-item">权限管理</a>
+					<a href="#" class="list-group-item">管理用户</a>
+					<a href="#" class="list-group-item">管理角色</a>
+					<a href="#" class="list-group-item">管理菜单</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="clearfix visible-xs"></div>
+		<!--角色权限增减操作-->
+		<!--div class="col-xs-6 col-sm-1">
+			<br/><br/><br/><br/><br/>
+			<p>
+			  <input type=button value="---》"></p>
+			<input type=button value="《---">
+		</div-->
+		<!--未授权列表-->
+		<div class="col-xs-6 col-sm-3" >
+			<div class="list-group">
+				<div class="tooltip-options">
+					<a class="list-group-item active" data-toggle="tooltip" title="双击授权">待分配权限</a>
+				</div>
+				<div id="list_unauth">
+					<a href="#" class="list-group-item">测试管理</a>
+					<a href="#" class="list-group-item">开放平台</a>
+					<a href="#" class="list-group-item">API申请说明</a>
+					<a href="#" class="list-group-item">API说明</a>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+
+
+
+
 <% include ../footer.html %>

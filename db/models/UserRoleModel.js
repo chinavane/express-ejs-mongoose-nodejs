@@ -23,6 +23,7 @@ var UserRole = new Schema({
 	}
 },{collection:'userrole'});
 
+
 var userRoleModel = mongoose.model('userrole',UserRole);
 
 exports.UserRoleSchema = UserRole;

@@ -12,13 +12,13 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	console.log('-------------');
+	// console.log('-------------');
 	var userInfoModel = userinfoModel.UserModel;
 	// req.session.user={name:'jack'};
 	var usercode = req.body.usercode;
 	var password = req.body.password;
-	console.log(usercode);
-	console.log(password);
+	// console.log(usercode);
+	// console.log(password);
 
 	// 加密
 	var sha1 = crypto.createHash('sha1');
@@ -42,7 +42,7 @@ router.post('/', function(req, res, next) {
 		}
 		else{
 			if(doc.length != 0){
-				console.log('there is a user.');
+				// console.log('there is a user.');
 				req.session.user=doc[0];
 				res.send({'redirect':'/'});
 			}

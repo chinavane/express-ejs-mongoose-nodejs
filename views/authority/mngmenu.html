@@ -1,7 +1,91 @@
 <% include ../header.html %>
+<script type="text/javascript">
+
+
+	// 查询展示公共函数
+	function querydata(data){
+		$('#info').empty();
+		var innerhtml = "";
+		for(var i = 0 ; i < data.length ; i ++){
+
+			innerhtml += "<tr><td id='"+data[i]._id+"_mid'>"+data[i].mid+
+			"</td><td id='"+data[i]._id+"_mname'>"+data[i].mname+
+			"</td><td id='"+data[i]._id+"_murl'>"+data[i].murl+
+			"</td><td id='"+data[i]._id+"_mdesc'>"+data[i].mdesc+
+			"</td><td id='"+data[i]._id+"_parentid'>"+data[i].parentid+
+			"</td><td id='"+data[i]._id+"_order'>"+data[i].order+
+			"</td></tr>";
+		}
+		$('#info').html(innerhtml);
+	};
+
+	$(document).ready(function(){
+		// 页面初始化查询
+		$.getJSON("/mngmenu/init",{},function(data){
+			querydata(data);
+		});
+		// 保存及保存后展示
+		$("#saveRec").click({msg:'click add'},function(event){
+			var name = $("#name").val();
+			var url = $("#url").val();
+			var desc = $("#desc").val();
+			var parentid = $("#parentid").val();
+			var order = $("#order").val();
+			var param = {name:name,url:url,desc:desc,parentid:parentid,order:order};
+			console.log(param);
+			$.post('/mngmenu/addmenu',param,function(data){
+				if(data.errors){
+					alert(data.errors);
+					return;
+				}
+				querydata(data);
+			}).error(function(err){
+				alert(err);
+			});
+		});
+
+	});
+
+</script>
+
+
 <div class="bs-docs-header" id="content" tabindex="-1">
   <div class="container">
     <h2>管理菜单</h2>
   </div>
 </div>
+
+<div class="container">
+	<form id="_form">
+	<button type="button" class="btn btn-primary" data-toggle="collapse" 
+			data-target="#addcontent" id="_add">
+		增加
+	</button>
+	<p>
+		<div id="addcontent" class="collapse">
+			<input type="text" class="form-horizontal" id="name" placeholder="请输入名称">
+			<input type="text" class="form-horizontal" id="url" placeholder="请输入url">
+			<input type="text" class="form-horizontal" id="desc" placeholder="请描述">
+			<input type="text" class="form-horizontal" id="parentid" placeholder="父菜单id">
+			<input type="text" class="form-horizontal" id="order" placeholder="排序">
+			<button type="button" class="btn btn-warning" id="saveRec">保存</button>
+		</div>
+	</p>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>名称</th>
+				<th>地址</th>
+				<th>描述</th>
+				<th>父菜单</th>
+				<th>排序</th>
+			</tr>
+		</thead>
+		<tbody id = "info">
+		</tbody>
+	</table>
+	</form>
+</div>
+
 <% include ../footer.html %>

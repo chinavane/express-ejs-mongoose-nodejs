@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var crypto = require('crypto');// 加密模块
-var userinfoModel = require('../../db/models/UserModel');
+var UserModel = require('../../db/models/UserModel');
 var UserRoleModel = require('../../db/models/UserRoleModel');
 var RoleModel = require('../../db/models/RoleModel');
 var db = require('../../db/db');
@@ -20,7 +20,8 @@ router.post('/',function(req,res,next){
 	var birthday = req.body.birthday;
 	var gender = req.body.gender;
 	var password = req.body.password;
-	var userInfoModel = userinfoModel.UserModel;
+	var roleid = req.body.role;
+	var userInfoModel = UserModel.UserModel;
 	// 加密
 	var sha1 = crypto.createHash('sha1');
 	sha1.update(password);
@@ -32,9 +33,10 @@ router.post('/',function(req,res,next){
 	userinfo.gender = gender;
 	userinfo.birthday = birthday;
 	userinfo.password = sha1.digest('hex');
+	userinfo.role_id = roleid;
 	userinfo.createdby = req.session.user.usercode;
 
-	userInfoModel.create(userinfo,function(err,doc){
+	userInfoModel.findOne({usercode:usercode},function(err,exists){
 		if(err){
 			var returninfo = "";
 			var i = 1;
@@ -44,34 +46,71 @@ router.post('/',function(req,res,next){
 				++i;
 			}
 			res.json({errors:returninfo});
-			console.log(err.stack());
 		}
 		else{
-
-			console.log(doc);
-
-			// 默认分配超级用户权限
-			RoleModel.RoleModel.findOne({rid:2},function(err,role){
-				if(err){
-					console.log(err);
-				}
-				else{
-					var userrole = {user_id:doc,role_id:role,createdby:req.session.user.usercode};
-					UserRoleModel.UserRoleModel.create(userrole,function(err,ur){
-						if(err){
-							console.log(err);
+			if(exists =={} || exists == ''){
+				userInfoModel.create(userinfo,function(err,doc){
+					if(err){
+						var returninfo = "";
+						var i = 1;
+						for(key in err.errors){
+							console.log(err.errors[key].message);
+							returninfo += i + '.'+err.errors[key].message+'\n';
+							++i;
 						}
-						else{
-							// console.log(ur+" created");
-							res.send({'redirect':'/'});
-						}
-					});
-				}
+						res.json({errors:returninfo});
+						// console.log(err.stack());
+					}
+					else{
+						UserModel.UserModel.findUserWithRole(function(err,users){
+							//
+							if(err){
+								var returninfo = "";
+								var i = 1;
+								for(key in err.errors){
+									console.log(err.errors[key].message);
+									returninfo += i + '.'+err.errors[key].message+'\n';
+									++i;
+								}
+								res.json({errors:returninfo});
+							}
+							else{
+								// console.log(users);
+								res.json(users);
+							}
+						});
+					}
+				});
+			}
+			else{
+				res.json({errors:'用户已经存在'});
+			}
+		}
+	});
 				
-				
-			});
+});
+
+
+// 查询user
+router.post('/quser', function(req, res, next) {
+	UserModel.UserModel.findUserWithRole(function(err,users){
+		//
+		if(err){
+			var returninfo = "";
+			var i = 1;
+			for(key in err.errors){
+				console.log(err.errors[key].message);
+				returninfo += i + '.'+err.errors[key].message+'\n';
+				++i;
+			}
+			res.json({errors:returninfo});
+		}
+		else{
+			// console.log(users);
+			res.json(users);
 		}
 	});
 });
+
 
 module.exports = router;

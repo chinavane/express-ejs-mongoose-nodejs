@@ -42,9 +42,22 @@ var User = new Schema({
 		type : String,
 		required : true,
 		default : 'admin'
+	},
+	role_id : {
+		type : Schema.Types.ObjectId,
+		ref: 'role',
+		required : true
 	}
 
 },{collection:'user'});
+
+
+User.statics = {
+	findUserWithRole : function(paraJson,callback){
+		return this.find(paraJson).populate('role_id').exec(callback);
+	}
+};
+
 
 var UserModel = mongoose.model('user',User);
 
