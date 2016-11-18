@@ -7,27 +7,30 @@
 
 <div class="container">
 	<div class="page-header">
-    <h1>请求转发案例
-        <!--small></small-->
+    <h1>请求转发案例之一
+    	<p>
+        <small>前端发送请求先到nodejs后端，nodejs后端可以相应处理后再对其他服务器发出请求，对返回的结果处理后或直接返回到前端。</small></p>
     </h1>
     <p>Nodejs接受请求以后可以转发给另外的服务器处理，然后把处理结果再返回前端。</p>
     <p>
     	<pre>
-    	router.get('/', function(req, res, next) {
+    		// 把请求转发到新的地址，返回json数据集再返回到前台
+			router.get('/', function(req, res, next) {
 
-			var username = req.session.user?req.session.user.username:'';
-			
-			var content = '';
-			var url = "http://localhost:8082/dev/student/all";
-			http.get(url, function(resp) {
-		        resp.on('data', function(data) {
-		            content += data;
-		        }).on('end', function() {
-		            res.render('reqforword',{title:'请求转发',user:username,news:content});
-		        });
-		    })
+				var username = req.session.user?req.session.user.username:'';
+				
+				var content = '';
+				var url = "http://localhost:8082/dev/student/all?id=paraid";
+			    http.get(url, function(resp) {
+			        resp.on('data', function(data) {
+			            content += data;
+			        }).on('end', function() {
+			        	console.log(content);
+			            res.render('reqforword',{title:'请求转发',user:username,news:content});
+			        });
+			    });
 
-		});
+			});
 		
 		</pre>
     </p>
@@ -35,7 +38,51 @@
 </div>
 
 	<pre>
+		<p>系统实时显示：</p>
 		<div id="info"><%=news%></div>
+	</pre>
+	<pre>
+		<p>实际请求结果：</p>
+		<div>
+		[{"id":1,"firstName":"jimmy","lastName":"jobs","age":20,"gender":"male","sno":"S0001"},{"id":2,"firstName":"steven","lastName":"bosh","age":23,"gender":"male","sno":"S0002"},{"id":3,"firstName":"jessica","lastName":"lucy","age":19,"gender":"female","sno":"S0003"},{"id":4,"firstName":"lily","lastName":"karen","age":24,"gender":"female","sno":"S0004"},{"id":5,"firstName":"lyken","lastName":"cliton","age":18,"gender":"male","sno":"S0005"},{"id":6,"firstName":"steven","lastName":"jobs","age":21,"gender":"male","sno":"S0006"},{"id":7,"firstName":"boge","lastName":"zhak","age":27,"gender":"male","sno":"S0007"},{"id":8,"firstName":"jacker","lastName":"luise","age":18,"gender":"male","sno":"S0008"},{"id":9,"firstName":"rampf","lastName":"kiler","age":16,"gender":"female","sno":"S0009"},{"id":10,"firstName":"sam","lastName":"song","age":23,"gender":"male","sno":"S0010"},{"id":11,"firstName":"jill","lastName":"lee","age":22,"gender":"female","sno":"S0011"},{"id":12,"firstName":"grace","lastName":"gseng","age":29,"gender":"male","sno":"S0012"},{"id":13,"firstName":"terpu","lastName":"cliton","age":31,"gender":"female","sno":"S0013"},{"id":14,"firstName":"montain","lastName":"gas","age":36,"gender":"male","sno":"S0014"}]
+		</div>
+	</pre>
+</div>
+
+
+
+
+<div class="container">
+	<div class="page-header">
+    <h1>请求转发案例之二
+    	<p>
+        <small>前端发送的请求，Nodejs直接转发到第三方服务器，处理并返回结果。</small>
+        </p>
+    </h1>
+    <p>Nodejs接受请求以后可以转发给另外的服务器处理，然后把处理结果再返回前端。</p>
+    <p>
+    	<pre>
+    		app.js直接增加以下代码：
+
+			var request = require('request');
+
+			// 请求转发，接受请求后直接转发，返回到前端
+			app.use('/remoteReq',function(req,res){
+			  var url = "http://localhost:8082/dev/student/all?id=paraid";
+			  req.pipe(request.post(url,{form:req.body})).pipe(res);
+			});
+
+		
+		</pre>
+    </p>
+    <pre>结果如下：↓</pre>
+</div>
+
+	<pre>
+		<p>实际请求结果：</p>
+		<div>
+		[{"id":1,"firstName":"jimmy","lastName":"jobs","age":20,"gender":"male","sno":"S0001"},{"id":2,"firstName":"steven","lastName":"bosh","age":23,"gender":"male","sno":"S0002"},{"id":3,"firstName":"jessica","lastName":"lucy","age":19,"gender":"female","sno":"S0003"},{"id":4,"firstName":"lily","lastName":"karen","age":24,"gender":"female","sno":"S0004"},{"id":5,"firstName":"lyken","lastName":"cliton","age":18,"gender":"male","sno":"S0005"},{"id":6,"firstName":"steven","lastName":"jobs","age":21,"gender":"male","sno":"S0006"},{"id":7,"firstName":"boge","lastName":"zhak","age":27,"gender":"male","sno":"S0007"},{"id":8,"firstName":"jacker","lastName":"luise","age":18,"gender":"male","sno":"S0008"},{"id":9,"firstName":"rampf","lastName":"kiler","age":16,"gender":"female","sno":"S0009"},{"id":10,"firstName":"sam","lastName":"song","age":23,"gender":"male","sno":"S0010"},{"id":11,"firstName":"jill","lastName":"lee","age":22,"gender":"female","sno":"S0011"},{"id":12,"firstName":"grace","lastName":"gseng","age":29,"gender":"male","sno":"S0012"},{"id":13,"firstName":"terpu","lastName":"cliton","age":31,"gender":"female","sno":"S0013"},{"id":14,"firstName":"montain","lastName":"gas","age":36,"gender":"male","sno":"S0014"}]
+		</div>
 	</pre>
 </div>
 <% include ./footer.html %>

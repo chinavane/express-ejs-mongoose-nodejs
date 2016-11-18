@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
 	var username = req.session.user?req.session.user.username:'';
 	
 	var content = '';
-	var url = "http://localhost:8082/dev/student/all";
+	var url = "http://localhost:8082/dev/student/all?id=paraid";
     http.get(url, function(resp) {
         resp.on('data', function(data) {
             content += data;
@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
         	console.log(content);
             res.render('reqforword',{title:'请求转发',user:username,news:content});
         });
-    })
+    });
 
 });
 

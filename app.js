@@ -6,6 +6,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var request = require('request');
 
 var config = require('./config');
 
@@ -102,8 +103,15 @@ app.use('/mngmenu',mngmenu);
 app.use('/mngrole',mngrole);
 app.use('/mnguser',mnguser);
 
-// 请求转发
+// 请求转发，后端可以处理后转发，接收后再处理后返回到前端
 app.use('/reqforword',reqforword);
+
+// 请求转发，接受请求后直接转发，返回到前端
+app.use('/remoteReq',function(req,res){
+  var url = "http://localhost:8082/dev/student/all?id=ComeOnparaid";
+  req.pipe(request.post(url,{form:req.body})).pipe(res);
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
